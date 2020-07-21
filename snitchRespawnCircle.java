@@ -5,14 +5,12 @@ public static void main(String[] args) {
 		seekerAx = -313;
 		seekerAz = -293;
 		range = 100;
+	
 		int[] snitchCoord = snitchSpawn(seekerHx,seekerHz,seekerAx,seekerAz,range);
-		while(snitchCoord[1]<=298 && snitchCoord[1]>=-293&&Math.pow(snitchCoord[0]-seekerHx,2)+Math.pow(snitchCoord[1]-seekerHz, 2)>=10000 && Math.pow(snitchCoord[0]-seekerAx,2)+Math.pow(snitchCoord[1]-seekerAz, 2)>=10000) {
-		System.out.println("x: "+ snitchCoord[0]+"\nz: "+ snitchCoord[1]);
-		snitchCoord = snitchSpawn(seekerHx,seekerHz,seekerAx,seekerAz,range);
-		}
+		
 		System.out.println("x: "+ snitchCoord[0]+"\nz: "+ snitchCoord[1]);
 	}
-	public static int[] snitchSpawn(int seekerHx, int seekerHz, int seekerAx, int seekerAz, int range) {
+public static int[] snitchSpawn(int seekerHx, int seekerHz, int seekerAx, int seekerAz, int range) {
 		int quidMinx = -313;
 		int quidMaxx = 278;
 		int quidMinz = -293;
