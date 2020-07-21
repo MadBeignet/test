@@ -6,7 +6,7 @@ public static void main(String[] args) {
 		seekerAz = -293;
 		range = 100;
 		int[] snitchCoord = getRange(seekerHx,seekerHz,seekerAx,seekerAz,range);
-		
+	
 		System.out.println("x: "+ snitchCoord[0]+"\nz: "+ snitchCoord[1]);
 		
 	}
@@ -27,26 +27,26 @@ public static void main(String[] args) {
 		quidMinz = -293;
 		quidMaxz = 298;
 		if(minhx<quidMinx) 
-			minhx=maxhx;
+			minhx=quidMinx;
 		if(maxhx>quidMaxx)
-			maxhx=minhx;
+			maxhx=quidMaxx;
 		if(minhz<quidMinz)
-			minhz=maxhz;
+			minhz=quidMinz;
 		if(maxhz>quidMaxz)
-			maxhz=minhz;
+			maxhz=quidMaxz;
 		if(minax<quidMinx)
-			minax=maxax;
+			minax=quidMinx;
 		if(maxax>quidMaxx)
-			maxax=minax;
+			maxax=quidMaxx;
 		if(minaz<quidMinz)
-			minaz=maxaz;
+			minaz=quidMinz;
 		if(maxaz>quidMaxz)
-			maxaz=minaz;
+			maxaz=quidMaxz;
 		int xRange1,xRange2,zRange1,zRange2;
 		int spawnz;
 		int spawnx;
 		if(Math.abs(seekerAx-seekerHx)<2*range) {
-			xRange1 = Math.abs(seekerAx=seekerHx+2*range);
+			xRange1 = Math.abs(maxhx-minax);
 			xRange2 = 0;
 		
 		}else if(Math.abs(seekerAx-seekerHx)>=2*range){
@@ -57,7 +57,7 @@ public static void main(String[] args) {
 			xRange2 = 0;
 		}
 		if(Math.abs(seekerAz-seekerHz)<2*range) {
-			zRange1 = Math.abs(seekerAz-seekerHz)+2*range;
+			zRange1 = Math.abs(maxaz-minhz);
 			zRange2 = 0;
 		}else if (Math.abs(seekerHz-seekerAz)>=2*range){
 			zRange1 = 2*range;
