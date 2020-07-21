@@ -10,7 +10,7 @@ public static void main(String[] args) {
 		System.out.println("x: "+ snitchCoord[0]+"\nz: "+ snitchCoord[1]);
 		
 	}
-	public static int[] getRange(int seekerHx, int seekerHz, int seekerAx, int seekerAz,int range) {
+public static int[] getRange(int seekerHx, int seekerHz, int seekerAx, int seekerAz,int range) {
 		int minhx,minax,maxhx,maxax,minhz,minaz,maxhz,maxaz;
 		minhx = seekerHx-range;
 		maxhx = seekerHx+range;
