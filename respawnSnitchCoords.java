@@ -1,4 +1,4 @@
-public class respawnSnitch {
+public class respawnSnitchCoords {
 	public static void main(String[] args) {
 		int seekerHx, seekerHz,seekerAx,seekerAz,range;
 		seekerHx = 278;
