@@ -47,7 +47,7 @@ public static int[] snitchSpawn(int seekerHx, int seekerHz, int seekerAx, int se
 		rangez2= Math.abs(negCircleaz-posCircleaz);
 		}
 		int spawnz = (int)(Math.random()*(quidMaxz-quidMinz-rangez1-rangez2)+quidMinz);
-		if(spawnz < posCirclehz&&spawnz>negCirclehz) {
+		if(spawnz < posCirclehz&&spawnz>negCirclehz||spawnz<posCircleaz&&spawnz>negCircleaz) {
 			spawnz+=rangez1;
 		}
 		if(spawnz <posCircleaz&&spawnz>negCircleaz) {
