@@ -23,7 +23,7 @@ public static int[] snitchSpawn(int seekerHx, int seekerHz, int seekerAx, int se
 		int z = circle(x, seekerHz, seekerHx, seekerAz, seekerAx, range, quidMinz, quidMaxz);
 		return new int[] {x,z};
 	}
- public static int circle(int x,int centerhz,int centerhx, int centeraz, int centerax, int range, int quidMinz, int quidMaxz) {
+  public static int circle(int x,int centerhz,int centerhx, int centeraz, int centerax, int range, int quidMinz, int quidMaxz) {
 	  int posCirclehz = -500, negCirclehz = -500, posCircleaz =-500, negCircleaz= -500;
 	  
 	  
@@ -65,9 +65,6 @@ public static int[] snitchSpawn(int seekerHx, int seekerHz, int seekerAx, int se
 			
 			rangez1=Math.abs(negCirclehz-posCirclehz);
 		}
-
-		System.out.println(rangez1);
-		System.out.println(rangez2);
 		int spawnz = (int)(Math.random()*(quidMaxz-quidMinz-rangez1-rangez2)+quidMinz+1);
 
 		if((rangez1!=0&&rangez2!=0&&rangez1>0)&&spawnz <= posCirclehz&&spawnz>=negCirclehz) {
@@ -75,7 +72,6 @@ public static int[] snitchSpawn(int seekerHx, int seekerHz, int seekerAx, int se
 			if(spawnz<=posCircleaz&&spawnz>=negCircleaz)
 				spawnz+=rangez2;
 		}
-		System.out.println(spawnz);
 		if((rangez1!=0&&rangez2!=0&&rangez1>0)&&spawnz<=posCircleaz&&spawnz>=negCircleaz) {
 			spawnz+=rangez2;
 			if(spawnz<=posCirclehz&&spawnz>=negCirclehz)
@@ -84,13 +80,10 @@ public static int[] snitchSpawn(int seekerHx, int seekerHz, int seekerAx, int se
 		if(rangez1<0&&(spawnz<=posCirclehz&&spawnz>=negCirclehz||spawnz<=posCircleaz&&spawnz>=negCircleaz)) {
 			spawnz+=rangez1+rangez2;
 		}
-		System.out.println(spawnz);
 		if(rangez1==0&&rangez2!=0&&spawnz<=posCircleaz&&spawnz>=negCircleaz)
 			spawnz+=rangez2;
-		System.out.println(spawnz);
 		if(rangez2==0&&rangez1!=0&&spawnz<=posCirclehz&&spawnz>=negCirclehz)
 			spawnz+=rangez1;
-		System.out.println(spawnz);
 		return spawnz;
 }
 }
