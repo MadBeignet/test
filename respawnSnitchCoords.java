@@ -29,14 +29,14 @@ public class respawnSnitch {
 	// so in this first part I basically just created the equation of a circle and found both potential points using the random x value
 		  // the error I had originally was having a negative square root which I took as needing to absolute value but I just had to write something recognizing that the circle doesn't exist there
 		  // home seeker
-	  if(Math.pow(range, 2)-Math.pow(x-centerhx, 2)>=0){	
-	   posCirclehz = ((Math.sqrt(Math.pow(range, 2)-Math.pow(x-centerhx, 2)))+centerhz);
-		 negCirclehz = (((-(Math.sqrt(Math.pow(range, 2)-Math.pow(x-centerhx, 2)))))+centerhz);
-		 if(posCirclehz >quidMaxz)
-				posCirclehz = quidMaxz; // basically just makes sure that the values on the circle don't go outside of the map
+	if(Math.pow(range, 2)-Math.pow(x-centerhx, 2)>=0){	
+	  	posCirclehz = ((Math.sqrt(Math.pow(range, 2)-Math.pow(x-centerhx, 2)))+centerhz);
+		negCirclehz = (((-(Math.sqrt(Math.pow(range, 2)-Math.pow(x-centerhx, 2)))))+centerhz);
+		if(posCirclehz >quidMaxz)
+			posCirclehz = quidMaxz; // basically just makes sure that the values on the circle don't go outside of the map
 			if(negCirclehz<quidMinz)
 				negCirclehz = quidMinz;
-				}
+	}
 
 	// same as above but for away seeker
 	if((Math.pow(range, 2)-Math.pow(x-centerax, 2))>=0)	{
