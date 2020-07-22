@@ -2,7 +2,7 @@ public class respawnSnitch {
 	public static void main(String[] args) {
 		int seekerHx, seekerHz,seekerAx,seekerAz,range;
 		seekerHx = (int)(Math.random()*(278+313)-313+1);
-		seekerHz = (int)(Math.random()*(298+293)-293+1);
+		seekerHz = (int)(Math.random()*(298+293)-293+1); // these were just random to test, but they'd be the home seeker's x and z and away seeker's x and z
 		seekerAx = (int)(Math.random()*(278+313)-313+1);
 		seekerAz = (int)(Math.random()*(298+293)-293+1);
 		range = 100;
