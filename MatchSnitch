@@ -1,4 +1,36 @@
-  @Override
+public class MatchSnitch extends BaseSnitch {
+
+    private int _minimumRespawnYValue;
+    private int _maximumRespawnYValue;
+
+    private int _borderMinZ;
+    private int _borderMaxZ;
+    private int _borderMinX;
+    private int _borderMaxX;
+
+    private int _range;
+
+    private double _defaultIntersecValueIncorrect;
+
+    @Override
+    public void loadValues() {
+        super.loadValues();
+        FileConfiguration quidditchVariables = DAQuidditch.getQuidditchVariables();
+
+        _minimumRespawnYValue = quidditchVariables.getInt("Snitch.Spawning.Y value.Minimum", 168);
+        _maximumRespawnYValue = quidditchVariables.getInt("Snitch.Spawning.Y value.Maximum", 240);
+
+        _borderMinZ = quidditchVariables.getInt("Snitch.Spawning.Border.Z value.Minimum", -292);
+        _borderMaxZ = quidditchVariables.getInt("Snitch.Spawning.Border.Z value.Maximum", 297);
+        _borderMinX = quidditchVariables.getInt("Snitch.Spawning.Border.X value.Minimum", -312);
+        _borderMaxX = quidditchVariables.getInt("Snitch.Spawning.Border.X value.Maximum", 277);
+
+        _range = quidditchVariables.getInt("Snitch.Spawning.Range", 100);
+
+       
+    }
+
+    @Override
     protected Location generateSpawnLocation() {
         if(_playersToAvoid.size() != 2) {
             return super.generateSpawnLocation();
@@ -19,27 +51,12 @@
         }
 
 
-        //TODO: Generate a safe Y value
-        //TODO: Ensure the Snitch doesn't break if it spawns in chunks without players nearby
-        //TODO: Ensure Snitch does not spawn within a block
-
         // Diagram: https://media.discordapp.net/attachments/779812032920158228/779827414636953600/image0.png
 
-        // These are the variables in which the Z value of a circle intersects the X line.
-        double xIntersecHomePosZ = 250;
-        double xIntersecHomeNegZ = -xIntersecHomePosZ;
-        double xIntersecAwayPosZ = 250;
-        double xIntersecAwayNegZ = -xIntersecAwayPosZ;
-
-        // ???
-        int range;
-
-        // This is the coordinates the Snitch can spawn.
-        // I.e. between the barrier walls. It is 1 block inwards from the barrier walls.
-        int borderMinZ = -292;
-        int borderMaxZ = 297;
-        int borderMinX = -312;
-        int borderMaxX = 277;
+        double _xIntersecHomePosZ = 0;
+        double _xIntersecHomeNegZ = 0;
+        double _xIntersecAwayPosZ = 0;
+        double _xIntersecAwayNegZ = 0;
 
         // It cannot be assumed these are the actual home/away. They are just the two different seekers.
         int homeSeekerX = homeSeeker.getLocation().getBlockX();
@@ -48,32 +65,32 @@
         int awaySeekerZ = awaySeeker.getLocation().getBlockZ();
 
         // Because the arena is about 600 wide each way and each seeker takes up 200 each optimally, then the snitch can spawn on any x value
-        int x = (int) (Math.random() * (borderMaxX - borderMinX) + borderMinX + 1);
+        int snitchSpawnLocX = (int) (Math.random() * (_borderMaxX - _borderMinX) + _borderMinX + 1);
 
         // So in this first part I basically just created the equation of a circle and found both potential points using the random x value
-        double homeExistence = Math.pow(range, 2) - Math.pow(x - homeSeekerX, 2);
+        double homeExistence = Math.pow(_range, 2) - Math.pow(snitchSpawnLocX - homeSeekerX, 2);
         if (homeExistence >= 0) {
-            xIntersecHomePosZ= ((Math.sqrt(homeExistence)) + homeSeekerZ);
-            xIntersecHomeNegZ = (((-(Math.sqrt(homeExistence)))) + homeSeekerZ);
+            _xIntersecHomePosZ= ((Math.sqrt(homeExistence)) + homeSeekerZ);
+            _xIntersecHomeNegZ = (((-(Math.sqrt(homeExistence)))) + homeSeekerZ);
 
-            if (xIntersecHomePosZ> borderMaxZ) {
-                xIntersecHomePosZ= borderMaxZ; // basically just makes sure that the values on the circle don't go outside of the map
+            if (_xIntersecHomePosZ> _borderMaxZ) {
+                _xIntersecHomePosZ= _borderMaxZ; // basically just makes sure that the values on the circle don't go outside of the map
             }
-            if (xIntersecHomeNegZ < borderMinZ) {
-                xIntersecHomeNegZ = borderMinZ;
+            if (_xIntersecHomeNegZ < _borderMinZ) {
+                _xIntersecHomeNegZ = _borderMinZ;
             }
         }
 
         // same as above but for away seeker
-        double awayExistence  = Math.pow(range, 2) - Math.pow(x - awaySeekerX, 2);
+        double awayExistence  = Math.pow(_range, 2) - Math.pow(snitchSpawnLocX - awaySeekerX, 2);
         if (awayExistence  >= 0) {
-            xIntersecAwayPosZ = (Math.sqrt(Math.abs(awayExistence ))) + awaySeekerZ;
-            xIntersecAwayNegZ = ((-(Math.sqrt(Math.abs(awayExistence )))) + awaySeekerZ);
-            if (xIntersecAwayPosZ > borderMaxZ) {
-                xIntersecAwayPosZ = borderMaxZ; // again, can't be a point outside of the map
+            _xIntersecAwayPosZ = (Math.sqrt(Math.abs(awayExistence ))) + awaySeekerZ;
+            _xIntersecAwayNegZ = ((-(Math.sqrt(Math.abs(awayExistence )))) + awaySeekerZ);
+            if (_xIntersecAwayPosZ > _borderMaxZ) {
+                _xIntersecAwayPosZ = _borderMaxZ; // again, can't be a point outside of the map
             }
-            if (xIntersecAwayNegZ < borderMinZ) {
-                xIntersecAwayNegZ = borderMinZ;
+            if (_xIntersecAwayNegZ < _borderMinZ) {
+                _xIntersecAwayNegZ = _borderMinZ;
             }
         }
 
@@ -81,90 +98,87 @@
         // 84-124 is tests for how the range (areas where the snitch cannot spawn) should be interpreted
         // if away circle doesn't exist but home does this created a problem so the -500 was needed
         // testing for overlap between the circles
-        if (xIntersecHomePosZ> xIntersecAwayNegZ && xIntersecAwayNegZ != -500 && Math.abs(xIntersecHomePosZ- xIntersecAwayNegZ) < Math.abs(xIntersecHomePosZ- xIntersecHomeNegZ)) {
-            homeSeekerZRange = (int) (Math.abs(xIntersecHomePosZ- xIntersecHomeNegZ) - (Math.abs(xIntersecHomePosZ- xIntersecAwayNegZ))) + 1;
-            awaySeekerZRange = (int) Math.abs(xIntersecAwayPosZ - xIntersecAwayNegZ) + 1;
+        if (_xIntersecHomePosZ> _xIntersecAwayNegZ && awayExistence >= 0 && Math.abs(_xIntersecHomePosZ- _xIntersecAwayNegZ) < Math.abs(_xIntersecHomePosZ- _xIntersecHomeNegZ)) {
+            homeSeekerZRange = (int) (Math.abs(_xIntersecHomePosZ- _xIntersecHomeNegZ) - (Math.abs(_xIntersecHomePosZ- _xIntersecAwayNegZ))) + 1;
+            awaySeekerZRange = (int) Math.abs(_xIntersecAwayPosZ - _xIntersecAwayNegZ) + 1;
 
         }
 
         // same as above
-        if (xIntersecAwayPosZ > xIntersecHomeNegZ && xIntersecHomeNegZ != -500 && Math.abs(xIntersecAwayPosZ - xIntersecHomeNegZ) < Math.abs(xIntersecAwayPosZ - xIntersecAwayNegZ)) {
-            homeSeekerZRange = (int) (Math.abs(xIntersecHomePosZ- xIntersecHomeNegZ) - (Math.abs(xIntersecAwayPosZ - xIntersecHomeNegZ))) + 1;
-            awaySeekerZRange = (int) Math.abs(xIntersecAwayPosZ - xIntersecAwayNegZ) + 1;
+        if (_xIntersecAwayPosZ > _xIntersecHomeNegZ && homeExistence >= 0 && Math.abs(_xIntersecAwayPosZ - _xIntersecHomeNegZ) < Math.abs(_xIntersecAwayPosZ - _xIntersecAwayNegZ)) {
+            homeSeekerZRange = (int) (Math.abs(_xIntersecHomePosZ- _xIntersecHomeNegZ) - (Math.abs(_xIntersecAwayPosZ - _xIntersecHomeNegZ))) + 1;
+            awaySeekerZRange = (int) Math.abs(_xIntersecAwayPosZ - _xIntersecAwayNegZ) + 1;
 
         }
 
         // checks if one range is inside of the other range and accounts for that
-        boolean homeAwayCirclesOverlap  = (xIntersecHomePosZ>= xIntersecAwayPosZ && xIntersecHomeNegZ <= xIntersecAwayNegZ) || (xIntersecAwayPosZ >= xIntersecHomePosZ&& xIntersecAwayNegZ <= xIntersecHomeNegZ);
-        if ((xIntersecHomeNegZ != -500 && xIntersecAwayNegZ != -500) && homeAwayCirclesOverlap ) {
-            if (Math.abs(xIntersecHomePosZ- xIntersecHomeNegZ) > Math.abs(xIntersecAwayPosZ - xIntersecAwayNegZ)) {
-                homeSeekerZRange = (int) Math.abs(xIntersecHomePosZ- xIntersecHomeNegZ + 1) / 2;
-                awaySeekerZRange = (int) Math.abs(xIntersecHomePosZ- xIntersecHomeNegZ + 1) / 2;
+        boolean homeAwayCirclesOverlap  = (_xIntersecHomePosZ>= _xIntersecAwayPosZ && _xIntersecHomeNegZ <= _xIntersecAwayNegZ) || (_xIntersecAwayPosZ >= _xIntersecHomePosZ&& _xIntersecAwayNegZ <= _xIntersecHomeNegZ);
+        if ((homeExistence >= 0 && awayExistence >= 0) && homeAwayCirclesOverlap ) {
+            if (Math.abs(_xIntersecHomePosZ- _xIntersecHomeNegZ) > Math.abs(_xIntersecAwayPosZ - _xIntersecAwayNegZ)) {
+                homeSeekerZRange = (int) Math.abs(_xIntersecHomePosZ- _xIntersecHomeNegZ + 1) / 2;
+                awaySeekerZRange = (int) Math.abs(_xIntersecHomePosZ- _xIntersecHomeNegZ + 1) / 2;
             } else {
 
-                homeSeekerZRange = (int) Math.abs(xIntersecAwayPosZ - xIntersecAwayNegZ + 1) / 2;
-                awaySeekerZRange = (int) Math.abs(xIntersecAwayPosZ - xIntersecAwayNegZ + 1) / 2;
+                homeSeekerZRange = (int) Math.abs(_xIntersecAwayPosZ - _xIntersecAwayNegZ + 1) / 2;
+                awaySeekerZRange = (int) Math.abs(_xIntersecAwayPosZ - _xIntersecAwayNegZ + 1) / 2;
             }
         }
 
         // this one basically just makes sure there is no overlap and that the bigger value on one circle is less than the smaller value on another
-        if ((xIntersecAwayNegZ != -500 && xIntersecHomeNegZ != -500) && (xIntersecHomePosZ< xIntersecAwayNegZ || xIntersecAwayPosZ <= xIntersecHomeNegZ)) {
-            homeSeekerZRange = (int) Math.abs(xIntersecHomeNegZ - xIntersecHomePosZ) + 1;
-            awaySeekerZRange = (int) Math.abs(xIntersecAwayNegZ - xIntersecAwayPosZ) + 1;
+        if ((homeExistence >= 0 && awayExistence >= 0) && (_xIntersecHomePosZ< _xIntersecAwayNegZ || _xIntersecAwayPosZ <= _xIntersecHomeNegZ)) {
+            homeSeekerZRange = (int) Math.abs(_xIntersecHomeNegZ - _xIntersecHomePosZ) + 1;
+            awaySeekerZRange = (int) Math.abs(_xIntersecAwayNegZ - _xIntersecAwayPosZ) + 1;
         }
 
         // this one is for if home circle doesn't exist, homeSeekerZRange = 0 in this case
         if (homeExistence < 0 && awayExistence  >= 0) {
-            awaySeekerZRange = (int) Math.abs(xIntersecAwayNegZ - xIntersecAwayPosZ) + 1;
+            awaySeekerZRange = (int) Math.abs(_xIntersecAwayNegZ - _xIntersecAwayPosZ) + 1;
         }
 
         // this one is for if away circle doesn't exist, awaySeekerZRange = 0 in this case
         if (awayExistence  < 0 && homeExistence >= 0) {
-            homeSeekerZRange = (int) Math.abs(xIntersecHomeNegZ - xIntersecHomePosZ) + 1;
+            homeSeekerZRange = (int) Math.abs(_xIntersecHomeNegZ - _xIntersecHomePosZ) + 1;
         }
 
         // this basically calculates the number of spawnable places for the snitch in the one line of the random x value entered from main method
-        int spawnz = (int) (Math.random() * (borderMaxZ - borderMinZ - homeSeekerZRange - awaySeekerZRange) + borderMinZ);
+        int snitchSpawnLocZ = (int) (Math.random() * (_borderMaxZ - _borderMinZ - homeSeekerZRange - awaySeekerZRange) + _borderMinZ);
 
-        // all below is the area where spawnz is tested whether it needs to be shifted
-        //this is basically for points where the one range is around the other, but the point (spawnz) is inside one or both of the ranges
-        if (homeAwayCirclesOverlap  && ((spawnz < xIntersecHomePosZ&& spawnz > xIntersecHomeNegZ) || (spawnz < xIntersecAwayPosZ && spawnz > xIntersecAwayNegZ))) {
-            spawnz += homeSeekerZRange + awaySeekerZRange;
+        // all below is the area where snitchSpawnLocZ is tested whether it needs to be shifted
+        //this is basically for points where the one range is around the other, but the point (snitchSpawnLocZ) is inside one or both of the ranges
+        if (homeAwayCirclesOverlap  && ((snitchSpawnLocZ < _xIntersecHomePosZ&& snitchSpawnLocZ > _xIntersecHomeNegZ) || (snitchSpawnLocZ < _xIntersecAwayPosZ && snitchSpawnLocZ > _xIntersecAwayNegZ))) {
+            snitchSpawnLocZ += homeSeekerZRange + awaySeekerZRange;
         }
 
         // makes sure both circles exist in the line and then sees if the point picked is in the unspawnable range, if so, adds the range of the circle on that line
-        if ((awaySeekerZRange != 0 && homeSeekerZRange > 0) && spawnz <= xIntersecHomePosZ&& spawnz >= xIntersecHomeNegZ) {
+        if ((awaySeekerZRange != 0 && homeSeekerZRange > 0) && snitchSpawnLocZ <= _xIntersecHomePosZ&& snitchSpawnLocZ >= _xIntersecHomeNegZ) {
             //adds the range of the other circle if it runs into it after being added above
-            spawnz += homeSeekerZRange;
+            snitchSpawnLocZ += homeSeekerZRange;
 
-            if (spawnz <= xIntersecAwayPosZ && spawnz >= xIntersecAwayNegZ) {
-                spawnz += awaySeekerZRange;
+            if (snitchSpawnLocZ <= _xIntersecAwayPosZ && snitchSpawnLocZ >= _xIntersecAwayNegZ) {
+                snitchSpawnLocZ += awaySeekerZRange;
             }
         }
 
         // same thing as above just flip flopped
-        if ((awaySeekerZRange != 0 && homeSeekerZRange > 0) && spawnz <= xIntersecAwayPosZ && spawnz >= xIntersecAwayNegZ) {
-            spawnz += awaySeekerZRange;
+        if ((awaySeekerZRange != 0 && homeSeekerZRange > 0) && snitchSpawnLocZ <= _xIntersecAwayPosZ && snitchSpawnLocZ >= _xIntersecAwayNegZ) {
+            snitchSpawnLocZ += awaySeekerZRange;
 
-            if (spawnz <= xIntersecHomePosZ&& spawnz >= xIntersecHomeNegZ) {
-                spawnz += homeSeekerZRange;
+            if (snitchSpawnLocZ <= _xIntersecHomePosZ&& snitchSpawnLocZ >= _xIntersecHomeNegZ) {
+                snitchSpawnLocZ += homeSeekerZRange;
             }
         }
-
-        // because I separated homeSeekerZRange and awaySeekerZRange when the circles overlapped, one was negative, so I made another statement because it would jump 160 blocks and not go back
-        if (homeSeekerZRange < 0 && (spawnz <= xIntersecHomePosZ&& spawnz >= xIntersecHomeNegZ || spawnz <= xIntersecAwayPosZ && spawnz >= xIntersecAwayNegZ)) {
-            spawnz += homeSeekerZRange + awaySeekerZRange;
-        }
-
+   
         // here we reach the tests for nonexistent circles and if the z value needs to be shifted by the range of the existent circle
-        if (homeSeekerZRange == 0 && awaySeekerZRange != 0 && spawnz <= xIntersecAwayPosZ && spawnz >= xIntersecAwayNegZ) {
-            spawnz += awaySeekerZRange;
+        if (homeSeekerZRange == 0 && awaySeekerZRange != 0 && snitchSpawnLocZ <= _xIntersecAwayPosZ && snitchSpawnLocZ >= _xIntersecAwayNegZ) {
+            snitchSpawnLocZ += awaySeekerZRange;
         }
 
-        if (awaySeekerZRange == 0 && homeSeekerZRange != 0 && spawnz <= xIntersecHomePosZ&& spawnz >= xIntersecHomeNegZ) {
-            spawnz += homeSeekerZRange;
+        if (awaySeekerZRange == 0 && homeSeekerZRange != 0 && snitchSpawnLocZ <= _xIntersecHomePosZ&& snitchSpawnLocZ >= _xIntersecHomeNegZ) {
+            snitchSpawnLocZ += homeSeekerZRange;
         }
 
-        // obviously no need to test if the ranges are both 0 because whatever random z value picked from the original spawnz equation would work
-        return new Location(FieldManager.MANAGER.getField().getWorld(), x, 70, spawnz); //returns the value for the x and z coordinate that the snitch should spawn at
+        // obviously no need to test if the ranges are both 0 because whatever random z value picked from the original snitchSpawnLocZ equation would work
+        return new Location(FieldManager.MANAGER.getField().getWorld(), snitchSpawnLocX, _random.nextInt(_minimumRespawnYValue, _maximumRespawnYValue), snitchSpawnLocZ);
     }
+}
+Sign up for free
