@@ -27,7 +27,7 @@ public class MatchSnitch extends BaseSnitch {
 
         _range = quidditchVariables.getInt("Snitch.Spawning.Range", 100);
 
-       
+        _defaultIntersecValueIncorrect = 0;
     }
 
     @Override
@@ -53,10 +53,10 @@ public class MatchSnitch extends BaseSnitch {
 
         // Diagram: https://media.discordapp.net/attachments/779812032920158228/779827414636953600/image0.png
 
-        double _xIntersecHomePosZ = 0;
-        double _xIntersecHomeNegZ = 0;
-        double _xIntersecAwayPosZ = 0;
-        double _xIntersecAwayNegZ = 0;
+        double _xIntersecHomePosZ = _defaultIntersecValueIncorrect;
+        double _xIntersecHomeNegZ = _defaultIntersecValueIncorrect;
+        double _xIntersecAwayPosZ = _defaultIntersecValueIncorrect;I
+        double _xIntersecAwayNegZ = _defaultIntersecValueIncorrect;
 
         // It cannot be assumed these are the actual home/away. They are just the two different seekers.
         int homeSeekerX = homeSeeker.getLocation().getBlockX();
@@ -181,4 +181,3 @@ public class MatchSnitch extends BaseSnitch {
         return new Location(FieldManager.MANAGER.getField().getWorld(), snitchSpawnLocX, _random.nextInt(_minimumRespawnYValue, _maximumRespawnYValue), snitchSpawnLocZ);
     }
 }
-Sign up for free
